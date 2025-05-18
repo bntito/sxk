@@ -6,7 +6,7 @@ export default function CuadriculaNumeros({ numerosVendidos = [] }) {
 
   return (
     <div className="grid grid-cols-10 gap-1 max-w-md mx-auto my-6">
-      {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
+      {Array.from({ length: 300 }, (_, i) => i + 1).map((num) => {
         const vendido = vendidosSet.has(num);
         return (
           <div

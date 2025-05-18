@@ -128,8 +128,10 @@ const servidores = [
 
   return (
     <div className="p-6 max-w-md mx-auto text-center bg-white">
+      
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
+      <h5 className="text-2xl font text-blue-500 mb-6">$50</h5>
       <div className="flex flex-col gap-2 mb-4">
         <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" />
@@ -225,13 +227,11 @@ const servidores = [
           </CardContent>
         </Card>
       )}
-
+      <p className="mt-6 text-sm text-gray-700">
+        🎉 El sorteo se hará el mismo día del cumpleaños del grupo: <strong>28 de junio</strong>.<br />
+        🛠️ Las reuniones de servicio para formar parte de los servidores del cumple serán los sábados: <strong>31 de mayo</strong> y <strong>14 de junio</strong>.
+      </p>
       <CuadriculaNumeros numerosVendidos={numerosVendidos} />
-
-    <p className="mt-6 text-sm text-gray-700">
-      🎉 El sorteo se hará el mismo día del cumpleaños del grupo: <strong>28 de junio</strong>.<br />
-      🛠️ Las reuniones de servicio para formar parte de los servidores del cumple serán los sábados: <strong>31 de mayo</strong> y <strong>14 de junio</strong>.
-    </p>
 
     </div>
   );
