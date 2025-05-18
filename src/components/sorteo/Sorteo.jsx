@@ -17,10 +17,10 @@ export default function Sorteo() {
   const [animando, setAnimando] = useState(false);
   const [indexActual, setIndexActual] = useState(null);
   const [finalizado, setFinalizado] = useState(false);
+  const [cargando, setCargando] = useState(true);
 
   const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
 
-  // Formato dd/mm/yyyy
   const formatFecha = (fecha) => {
     const date = new Date(fecha);
     const dia = String(date.getDate()).padStart(2, "0");
@@ -30,12 +30,15 @@ export default function Sorteo() {
   };
 
   const cargarParticipantes = async () => {
+    setCargando(true);
     try {
       const response = await fetch(`${hostServer}/participantes`);
       const data = await response.json();
       setParticipantes(data);
     } catch (error) {
       console.error("Error al cargar los participantes:", error);
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -80,8 +83,7 @@ export default function Sorteo() {
       setFinalizado(false);
       let iteraciones = 30;
       let intervalo = setInterval(() => {
-        const elegido =
-          participantes[Math.floor(Math.random() * participantes.length)];
+        const elegido = participantes[Math.floor(Math.random() * participantes.length)];
         setGanador(elegido);
         setIndexActual(Math.floor(Math.random() * participantes.length));
         iteraciones--;
@@ -101,66 +103,50 @@ export default function Sorteo() {
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
       <div className="flex flex-col gap-2 mb-4">
-        <Input
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          placeholder="Nombre"
-        />
-        <Input
-          value={whatsapp}
-          onChange={(e) => setWhatsapp(e.target.value)}
-          placeholder="WhatsApp"
-        />
-        <Input
-          value={numeroRifa}
-          onChange={(e) => setNumeroRifa(e.target.value)}
-          placeholder="Número de Rifa"
-        />
-        <Input
-          type="date"
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-          placeholder="Fecha"
-        />
-        <Input
-          value={servidor}
-          onChange={(e) => setServidor(e.target.value)}
-          placeholder="Nombre del servidor"
-        />
+        <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
+        <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" />
+        <Input value={numeroRifa} onChange={(e) => setNumeroRifa(e.target.value)} placeholder="Número de Rifa" />
+        <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} placeholder="Fecha" />
+        <Input value={servidor} onChange={(e) => setServidor(e.target.value)} placeholder="Nombre del servidor" />
         <Button onClick={agregarParticipante} className="bg-blue-600 hover:bg-blue-700 text-white">
           Agregar Compa
         </Button>
       </div>
 
       <div className="overflow-x-auto mb-6">
-      <table className="w-full border-collapse border border-blue-300 text-sm">
-      <thead>
-        <tr className="bg-blue-100">
-          <th className="border border-blue-300 px-1 py-0.5">Nombre</th>
-          <th className="border border-blue-300 px-1 py-0.5">N° Rifa</th>
-          <th className="border border-blue-300 px-1 py-0.5">WhatsApp</th>
-          <th className="border border-blue-300 px-1 py-0.5">Fecha</th>
-          <th className="border border-blue-300 px-1 py-0.5">Servidor</th>
-        </tr>
-      </thead>
-      <tbody>
-    {participantes.map((p) => (
-      <tr
-        key={p.id}
-        className={`${
-          finalizado && p.nombre === ganador?.nombre ? "bg-blue-500 text-white" : "bg-white"
-        }`}
-      >
-        <td className="border border-blue-300 px-1 py-0.5">{p.nombre}</td>
-        <td className="border border-blue-300 px-1 py-0.5">{p.numeroRifa}</td>
-        <td className="border border-blue-300 px-1 py-0.5">{p.whatsapp}</td>
-        <td className="border border-blue-300 px-1 py-0.5">{formatFecha(p.fecha)}</td>
-        <td className="border border-blue-300 px-1 py-0.5">{p.servidor}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
+        <table className="w-full border-collapse border border-blue-300 text-sm">
+          <thead>
+            <tr className="bg-blue-100">
+              <th className="border border-blue-300 px-1 py-0.5">Nombre</th>
+              <th className="border border-blue-300 px-1 py-0.5">N° Rifa</th>
+              <th className="border border-blue-300 px-1 py-0.5">WhatsApp</th>
+              <th className="border border-blue-300 px-1 py-0.5">Fecha</th>
+              <th className="border border-blue-300 px-1 py-0.5">Servidor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cargando ? (
+              <tr>
+                <td colSpan="5" className="text-center py-2">Cargando...</td>
+              </tr>
+            ) : (
+              participantes.map((p) => (
+                <tr
+                  key={p.id}
+                  className={`${
+            finalizado && p.nombre === ganador?.nombre ? "bg-blue-500 text-white" : "bg-white"
+                  }`}
+                >
+                  <td className="border border-blue-300 px-1 py-0.5">{p.nombre}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">{p.numeroRifa}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">{p.whatsapp}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">{formatFecha(p.fecha)}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">{p.servidor}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
       <Button
@@ -189,7 +175,6 @@ export default function Sorteo() {
         </Card>
       )}
 
-      {/* Cuadricula de números */}
       <CuadriculaNumeros numerosVendidos={numerosVendidos} />
     </div>
   );
