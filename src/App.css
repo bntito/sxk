@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+background-color: rgb(196, 196, 241);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
