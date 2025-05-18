@@ -131,7 +131,7 @@ const servidores = [
       
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
-      <h5 className="text-2xl font text-blue-500 mb-6">$50</h5>
+      <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
       <div className="flex flex-col gap-2 mb-4">
         <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" />
