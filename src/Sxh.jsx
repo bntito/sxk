@@ -7,9 +7,9 @@ const Emep = () => {
     return (
         <Router>
             <div className="app-container">
-                <div className="menu-container">
+                {/* <div className="menu-container">
                     <Menu />
-                </div>
+                </div> */}
                 <div className="main-content">
                     <Routes>
                         {routes.map((route) => (
