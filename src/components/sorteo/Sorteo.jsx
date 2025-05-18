@@ -15,15 +15,17 @@ export default function Sorteo() {
   const [indexActual, setIndexActual] = useState(null);
   const [finalizado, setFinalizado] = useState(false);
 
+  const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
+
   // Función para formatear la fecha
   const formatFecha = (fecha) => {
     const date = new Date(fecha);
-    return date.toISOString().split('T')[0];  // Esto devuelve la fecha en formato "YYYY-MM-DD"
+    return date.toISOString().split('T')[0];
   };
 
   const cargarParticipantes = async () => {
     try {
-      const response = await fetch("http://localhost:5000/participantes");
+      const response = await fetch(`${hostServer}/participantes`);
       const data = await response.json();
       setParticipantes(data);
     } catch (error) {
@@ -38,7 +40,7 @@ export default function Sorteo() {
   const agregarParticipante = async () => {
     if (nombre.trim() && whatsapp.trim() && numeroRifa.trim() && fecha.trim()) {
       try {
-        const response = await fetch("http://localhost:5000/participantes", {
+        const response = await fetch(`${hostServer}/participantes`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nombre, whatsapp, numeroRifa, fecha })
