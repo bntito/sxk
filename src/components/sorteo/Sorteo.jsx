@@ -235,7 +235,8 @@ const servidores = [
 
       <Button
         onClick={realizarSorteo}
-        disabled={animando || participantes.length < 2}
+        // disabled={animando || participantes.length < 2}
+        disabled={true}
         className="w-full mb-4 bg-blue-600 hover:bg-blue-700 text-white"
       >
         {animando ? "Sorteando..." : "Iniciar Sorteo"}
@@ -260,9 +261,11 @@ const servidores = [
       )}
 
       <h3 className="text-lg font-semibold mb-4 text-red-600">
-        Cuenta regresiva al sorteo: {tiempoRestante}
+        Cuenta regresiva al sorteo 
+        <br /><hr />
+        {tiempoRestante}
       </h3>
-      
+
       <p className="mt-6 text-sm text-gray-700">
         🎉 El sorteo se hará el mismo día del cumpleaños del grupo: <strong>28 de junio</strong>.<br />
         🛠️ Las reuniones de servicio para formar parte de los servidores del cumple serán los sábados: <strong>31 de mayo</strong> y <strong>14 de junio</strong>.
