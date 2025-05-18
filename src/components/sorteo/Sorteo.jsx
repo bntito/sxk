@@ -125,10 +125,41 @@ const servidores = [
   };
 
   const numerosVendidos = participantes.map((p) => Number(p.numeroRifa));
+    const [tiempoRestante, setTiempoRestante] = useState("");
+
+  useEffect(() => {
+    const objetivo = new Date();
+    objetivo.setMonth(5); // junio (0-based)
+    objetivo.setDate(28);
+    objetivo.setHours(0, 0, 0, 0);
+
+    const actualizarCuenta = () => {
+      const ahora = new Date();
+      const diferencia = objetivo - ahora;
+
+      if (diferencia <= 0) {
+        setTiempoRestante("¡Hoy es el sorteo!");
+        return;
+      }
+
+      const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
+      const minutos = Math.floor((diferencia / (1000 * 60)) % 60);
+      const segundos = Math.floor((diferencia / 1000) % 60);
+
+      setTiempoRestante(
+        `${dias}d ${horas}h ${minutos}m ${segundos}s`
+      );
+    };
+
+    actualizarCuenta();
+    const intervalo = setInterval(actualizarCuenta, 1000);
+
+    return () => clearInterval(intervalo);
+  }, []);
 
   return (
     <div className="p-6 max-w-md mx-auto text-center bg-white">
-      
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
       <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
@@ -227,6 +258,11 @@ const servidores = [
           </CardContent>
         </Card>
       )}
+
+      <h3 className="text-lg font-semibold mb-4 text-red-600">
+        Cuenta regresiva al sorteo: {tiempoRestante}
+      </h3>
+      
       <p className="mt-6 text-sm text-gray-700">
         🎉 El sorteo se hará el mismo día del cumpleaños del grupo: <strong>28 de junio</strong>.<br />
         🛠️ Las reuniones de servicio para formar parte de los servidores del cumple serán los sábados: <strong>31 de mayo</strong> y <strong>14 de junio</strong>.
