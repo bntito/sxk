@@ -188,28 +188,33 @@ const servidores = [
         <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" />
 
-        <div className="flex flex-col gap-2">
-          {numerosRifa.map((num, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <Input
-                value={num}
-                onChange={(e) => actualizarNumero(index, e.target.value)}
-                placeholder={`Número de Rifa #${index + 1}`}
-                className="flex-1"
-              />
-              {index === numerosRifa.length - 1 && (
-                <Button
-                  type="button"
-                  onClick={agregarCampoNumero}
-                  variant="ghost"
-                  className="text-blue-600 hover:text-blue-800 text-xl"
-                >
-                  ➕
-                </Button>
-              )}
-            </div>
-          ))}
+      <div className="flex flex-col gap-2">
+        {numerosRifa.map((num, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <Input
+              value={num}
+              onChange={(e) => actualizarNumero(index, e.target.value)}
+              placeholder={`Número de Rifa #${index + 1}`}
+              className="flex-1"
+            />
+            {index === numerosRifa.length - 1 && (
+              <Button
+                type="button"
+                onClick={agregarCampoNumero}
+                variant="ghost"
+                className="text-blue-600 hover:text-blue-800 text-xl"
+              >
+                ➕
+              </Button>
+            )}
+          </div>
+        ))}
+
+        <div className="mt-4 font-semibold">
+          Total a pagar: ${numerosRifa.length * 50}
         </div>
+      </div>
+
 
         <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} placeholder="Fecha" />
         
