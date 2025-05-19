@@ -247,7 +247,9 @@ const servidores = [
           Vender número al Compañero
         </Button>
       </div>
-
+      <br />
+      <hr />
+      <br />
       <div className="overflow-x-auto mb-6">
         <table className="w-full border-collapse border border-blue-300 text-sm">
           <thead>
