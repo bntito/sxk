@@ -195,7 +195,7 @@ const servidores = [
         )}
 
         <Button onClick={agregarParticipante} className="bg-blue-600 hover:bg-blue-700 text-white">
-          Vender número al Compa
+          Vender número al Compañero
         </Button>
       </div>
 
