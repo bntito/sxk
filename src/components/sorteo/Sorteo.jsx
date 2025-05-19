@@ -256,42 +256,6 @@ const servidores = [
         </Button>
       </div>
       <br />
-      <hr />
-      <br />
-      <div className="overflow-x-auto mb-6">
-        <table className="w-full border-collapse border border-blue-300 text-sm">
-          <thead>
-            <tr className="bg-blue-100">
-              <th className="border border-blue-300 px-1 py-0.5">Nombre</th>
-              <th className="border border-blue-300 px-1 py-0.5">N° Rifa</th>
-              <th className="border border-blue-300 px-1 py-0.5">WhatsApp</th>
-              <th className="border border-blue-300 px-1 py-0.5">Fecha</th>
-              <th className="border border-blue-300 px-1 py-0.5">Servidor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cargando ? (
-              <tr>
-                <td colSpan="5" className="text-center py-2">Cargando...</td>
-              </tr>
-            ) : (
-              participantes.map((p) => (
-                <tr
-                  key={p.id}
-                  className={`${finalizado && p.nombre === ganador?.nombre ? "bg-blue-500 text-white" : "bg-white"}`}
-                >
-                  <td className="border border-blue-300 px-1 py-0.5">{p.nombre}</td>
-                  <td className="border border-blue-300 px-1 py-0.5">{p.numeroRifa}</td>
-                  <td className="border border-blue-300 px-1 py-0.5">{p.whatsapp}</td>
-                  <td className="border border-blue-300 px-1 py-0.5">{formatFecha(p.fecha)}</td>
-                  <td className="border border-blue-300 px-1 py-0.5">{p.servidor}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
       <Button
         onClick={realizarSorteo}
         // disabled={animando || participantes.length < 2}
@@ -334,6 +298,40 @@ const servidores = [
         <strong>31 de mayo</strong> y <strong>14 de junio</strong>.
       </p>
       <CuadriculaNumeros numerosVendidos={numerosVendidos} />
+
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full border-collapse border border-blue-300 text-sm">
+          <thead>
+            <tr className="bg-blue-100">
+              <th className="border border-blue-300 px-1 py-0.5">Nombre</th>
+              <th className="border border-blue-300 px-1 py-0.5">N° Rifa</th>
+              <th className="border border-blue-300 px-1 py-0.5">WhatsApp</th>
+              <th className="border border-blue-300 px-1 py-0.5">Fecha</th>
+              <th className="border border-blue-300 px-1 py-0.5">Servidor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cargando ? (
+              <tr>
+                <td colSpan="5" className="text-center py-2">Cargando...</td>
+              </tr>
+            ) : (
+              participantes.map((p) => (
+                <tr
+                  key={p.id}
+                  className={`${finalizado && p.nombre === ganador?.nombre ? "bg-blue-500 text-white" : "bg-white"}`}
+                >
+                  <td className="border border-blue-300 px-1 py-0.5">{p.nombre}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">{p.numeroRifa}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">{p.whatsapp}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">{formatFecha(p.fecha)}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">{p.servidor}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
     </div>
   );
