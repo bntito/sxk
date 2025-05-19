@@ -215,9 +215,17 @@ const servidores = [
         </div>
       </div>
 
+        <label htmlFor="fecha" className="block text-left text-gray-500 text-sm mb-1">
+          Fecha
+        </label>
+        <Input
+          id="fecha"
+          type="date"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+          placeholder="Fecha"
+        />
 
-        <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} placeholder="Fecha" />
-        
         <select
           value={servidor}
           onChange={(e) => {
