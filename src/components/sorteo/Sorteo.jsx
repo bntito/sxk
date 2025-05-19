@@ -8,7 +8,7 @@ import CuadriculaNumeros from "./CuadriculaNumeros";
 export default function Sorteo() {
   const [nombre, setNombre] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [numeroRifa, setNumeroRifa] = useState("");
+  const [numerosRifa, setNumerosRifa] = useState([""]);
   const [fecha, setFecha] = useState("");
   const [servidor, setServidor] = useState("");
   const [pin, setPin] = useState("");
@@ -69,11 +69,21 @@ const servidores = [
     return servidorSeleccionado && servidorSeleccionado.pin === pin;
   };
 
+  const agregarCampoNumero = () => {
+    setNumerosRifa([...numerosRifa, ""]);
+  };
+
+  const actualizarNumero = (index, value) => {
+    const nuevos = [...numerosRifa];
+    nuevos[index] = value;
+    setNumerosRifa(nuevos);
+  };
+
   const agregarParticipante = async () => {
     if (
       nombre.trim() &&
       whatsapp.trim() &&
-      numeroRifa.trim() &&
+      numerosRifa.some((n) => n.trim()) &&
       fecha.trim() &&
       servidor.trim() &&
       pin.trim()
@@ -82,17 +92,27 @@ const servidores = [
         alert("PIN incorrecto para el servidor seleccionado");
         return;
       }
+
+      const numerosValidos = numerosRifa.map(n => n.trim()).filter(n => n);
+
       try {
         const response = await fetch(`${hostServer}/participantes`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nombre, whatsapp, numeroRifa, fecha, servidor }),
+          body: JSON.stringify({
+            nombre,
+            whatsapp,
+            numerosRifa: numerosValidos,
+            fecha,
+            servidor,
+          }),
         });
+
         const data = await response.json();
         if (response.ok) {
           setNombre("");
           setWhatsapp("");
-          setNumeroRifa("");
+          setNumerosRifa([""]);
           setFecha("");
           setServidor("");
           setPin("");
@@ -105,6 +125,7 @@ const servidores = [
       }
     }
   };
+
 
   const realizarSorteo = () => {
     if (participantes.length > 1) {
@@ -166,7 +187,30 @@ const servidores = [
       <div className="flex flex-col gap-2 mb-4">
         <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" />
-        <Input value={numeroRifa} onChange={(e) => setNumeroRifa(e.target.value)} placeholder="Número de Rifa" />
+
+        <div className="flex flex-col gap-2">
+          {numerosRifa.map((num, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <Input
+                value={num}
+                onChange={(e) => actualizarNumero(index, e.target.value)}
+                placeholder={`Número de Rifa #${index + 1}`}
+                className="flex-1"
+              />
+              {index === numerosRifa.length - 1 && (
+                <Button
+                  type="button"
+                  onClick={agregarCampoNumero}
+                  variant="ghost"
+                  className="text-blue-600 hover:text-blue-800 text-xl"
+                >
+                  ➕
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+
         <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} placeholder="Fecha" />
         
         <select
