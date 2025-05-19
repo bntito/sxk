@@ -102,7 +102,7 @@ const servidores = [
           body: JSON.stringify({
             nombre,
             whatsapp,
-            numerosRifa: numerosValidos,
+            numeroRifa: numerosValidos,
             fecha,
             servidor,
           }),
