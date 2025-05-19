@@ -251,7 +251,7 @@ const servidores = [
           />
         )}
 
-        <Button onClick={agregarParticipante} className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button onClick={agregarParticipante} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
           Vender número al Compañero
         </Button>
       </div>
