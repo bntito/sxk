@@ -4,6 +4,7 @@ import { Input } from "../../components/ui/input";
 import { Card, CardContent } from "../../components/ui/card";
 import { motion } from "framer-motion";
 import CuadriculaNumeros from "./CuadriculaNumeros";
+import ResumenPorServidor from './ResumenPorServidor';
 
 export default function Sorteo() {
   const [nombre, setNombre] = useState("");
@@ -342,7 +343,7 @@ const servidores = [
           </tbody>
         </table>
       </div>
-
+      <ResumenPorServidor participantes={participantes} />
     </div>
   );
 }
