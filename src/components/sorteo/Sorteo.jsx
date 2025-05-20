@@ -82,62 +82,63 @@ const servidores = [
 
   const agregarParticipante = async () => {
     if (
-      nombre.trim() &&
-      whatsapp.trim() &&
-      numerosRifa.some((n) => n.trim()) &&
-      fecha.trim() &&
-      servidor.trim() &&
-      pin.trim()
+      !nombre.trim() ||
+      !whatsapp.trim() ||
+      !numerosRifa.some((n) => n.trim()) ||
+      !fecha.trim() ||
+      !servidor.trim() ||
+      !pin.trim()
     ) {
-      if (!validarPin()) {
-        alert("PIN incorrecto para el servidor seleccionado");
-        return;
+      alert("⚠️ Por favor, completá todos los campos obligatorios.");
+      return;
+    }
+
+    if (!validarPin()) {
+      alert("PIN incorrecto para el servidor seleccionado");
+      return;
+    }
+
+    const numerosValidos = numerosRifa.map(n => n.trim()).filter(n => n);
+
+    // Verificar si alguno de los números ya fue vendido
+    const duplicados = numerosValidos.filter((n) =>
+      numerosVendidos.includes(Number(n))
+    );
+
+    if (duplicados.length > 0) {
+      alert(`⚠️ Los siguientes números ya están vendidos: ${duplicados.join(", ")}`);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${hostServer}/participantes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre,
+          whatsapp,
+          numeroRifa: numerosValidos,
+          fecha,
+          servidor,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setNombre("");
+        setWhatsapp("");
+        setNumerosRifa([""]);
+        setFecha("");
+        setServidor("");
+        setPin("");
+        cargarParticipantes();
+      } else {
+        console.error("Error al agregar el participante:", data.error);
       }
-
-      const numerosValidos = numerosRifa.map(n => n.trim()).filter(n => n);
-
-      // Verificar si alguno de los números ya fue vendido
-      const duplicados = numerosValidos.filter((n) =>
-        numerosVendidos.includes(Number(n))
-      );
-
-      if (duplicados.length > 0) {
-        alert(`⚠️ Los siguientes números ya están vendidos: ${duplicados.join(", ")}`);
-        return;
-      }
-
-      try {
-        const response = await fetch(`${hostServer}/participantes`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            nombre,
-            whatsapp,
-            numeroRifa: numerosValidos,
-            fecha,
-            servidor,
-          }),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          setNombre("");
-          setWhatsapp("");
-          setNumerosRifa([""]);
-          setFecha("");
-          setServidor("");
-          setPin("");
-          cargarParticipantes();
-        } else {
-          console.error("Error al agregar el participante:", data.error);
-        }
-      } catch (error) {
-        console.error("Error al agregar el participante:", error);
-      }
+    } catch (error) {
+      console.error("Error al agregar el participante:", error);
     }
   };
-
-
 
   const realizarSorteo = () => {
     if (participantes.length > 1) {
