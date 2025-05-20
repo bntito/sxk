@@ -13,8 +13,22 @@ const ResumenPorServidor = ({ participantes }) => {
     return conteo;
   };
 
-  const resumen = contarVentasPorServidor();
+  const descargarDatos = async () => {
+    try {
+      const response = await fetch("https://tu-backend.render.com/api/datos");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "datos.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al descargar datos:", error);
+    }
+  };
 
+  const resumen = contarVentasPorServidor();
   const totalRifas = Object.values(resumen).reduce((a, b) => a + b, 0);
   const totalPesos = totalRifas * 50;
 
@@ -44,6 +58,12 @@ const ResumenPorServidor = ({ participantes }) => {
           </tr>
         </tbody>
       </table>
+      <button
+        onClick={descargarDatos}
+        className="mt-4 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Descargar datos
+      </button>
     </div>
   );
 };
