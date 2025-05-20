@@ -15,7 +15,7 @@ const ResumenPorServidor = ({ participantes }) => {
 
   const descargarDatos = async () => {
     try {
-      const response = await fetch("https://tu-backend.render.com/api/datos");
+      const response = await fetch("https://sxh-server.onrender.com/api/datos");
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
