@@ -60,7 +60,7 @@ const ResumenPorServidor = ({ participantes }) => {
       </table>
       <button
         onClick={descargarDatos}
-        className="mt-6 mb-6 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="mt-6 mb-10 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         Descargar datos
       </button>
