@@ -189,6 +189,9 @@ const servidores = [
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp del comprador" />
 
       <div className="flex flex-col gap-2 items-center">
+        <div className="text-sm font-semibold mb-2 text-orange-600 bg-orange-100 px-2 py-1 rounded">
+          Verificá si el número está disponible
+        </div>
         {numerosRifa.map((num, index) => (
           <div key={index} className="flex items-center gap-2 w-full">
             <Input
@@ -208,11 +211,12 @@ const servidores = [
           Agregar otro Número
         </Button>
 
-
         <div className="mt-4 font-semibold">
           Total a pagar: ${numerosRifa.length * 50}
         </div>
       </div>
+
+
 
 
 
