@@ -188,6 +188,9 @@ const servidores = [
         <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del comprador" />
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp del comprador" />
 
+        <br />
+        <hr />
+
       <div className="flex flex-col gap-2 items-center">
         <div className="text-sm font-semibold mb-2 text-orange-600 bg-orange-100 px-2 py-1 rounded">
           Verificá si el número está disponible
