@@ -19,31 +19,28 @@ const ResumenPorServidor = ({ participantes }) => {
   const totalPesos = totalRifas * 50;
 
   return (
-    <div className="mt-6">
-      <h3 className="text-lg font-semibold mb-2">Resumen de ventas por servidor</h3>
-      <table className="min-w-full border border-gray-300">
+    <div className="mt-6 text-sm">
+      <h3 className="text-base font-semibold mb-2">Resumen de ventas por servidor</h3>
+      <table className="min-w-full border border-gray-300 text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">Servidor</th>
-            <th className="px-4 py-2 text-left">Cantidad de rifas</th>
-            <th className="px-4 py-2 text-left">Total en $</th>
+            <th className="px-2 py-1 text-left">Servidor</th>
+            <th className="px-2 py-1 text-left">Cantidad de rifas</th>
+            <th className="px-2 py-1 text-left">Total en $</th>
           </tr>
         </thead>
         <tbody>
           {Object.entries(resumen).map(([servidor, cantidad]) => (
             <tr key={servidor}>
-              <td className="border px-4 py-2">{servidor}</td>
-              <td className="border px-4 py-2">{cantidad}</td>
-              <td className="border px-4 py-2">${cantidad * 50}</td>
+              <td className="border px-2 py-1">{servidor}</td>
+              <td className="border px-2 py-1">{cantidad}</td>
+              <td className="border px-2 py-1">${cantidad * 50}</td>
             </tr>
           ))}
           <tr className="font-bold bg-gray-100">
-            <td className="border px-4 py-2">Total</td>
-            <td className="border px-4 py-2">{totalRifas}</td>
-            <td className="border px-4 py-2">
-              {/* {totalPesos} */}
-
-            </td>
+            <td className="border px-2 py-1">Total</td>
+            <td className="border px-2 py-1">{totalRifas}</td>
+            <td className="border px-2 py-1">${totalPesos}</td>
           </tr>
         </tbody>
       </table>
