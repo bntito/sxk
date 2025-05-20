@@ -29,7 +29,7 @@ const servidores = [
   { nombre: "Gonzalo B", pin: "3333" },
   { nombre: "Leandro R", pin: "4444" },
   { nombre: "Matías N", pin: "5555" },
-  { nombre: "Paula S", pin: "6666" },
+  { nombre: "Paula S", pin: "1411" },
   { nombre: "Verónica F", pin: "7777" },
   { nombre: "Nicolás P", pin: "8888" },
   { nombre: "Nicolás F", pin: "9999" },
@@ -185,35 +185,36 @@ const servidores = [
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
       <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
       <div className="flex flex-col gap-2 mb-4">
-        <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre" />
-        <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" />
+        <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del comprador" />
+        <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp del comprador" />
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 items-center">
         {numerosRifa.map((num, index) => (
-          <div key={index} className="flex items-center gap-2">
+          <div key={index} className="flex items-center gap-2 w-full">
             <Input
               value={num}
               onChange={(e) => actualizarNumero(index, e.target.value)}
-              placeholder={`Número de Rifa #${index + 1}`}
+              placeholder={`Número de Rifa  # ${index + 1}`}
               className="flex-1"
             />
-            {index === numerosRifa.length - 1 && (
-              <Button
-                type="button"
-                onClick={agregarCampoNumero}
-                variant="ghost"
-                className="text-blue-600 hover:text-blue-800 text-xl"
-              >
-                ➕
-              </Button>
-            )}
           </div>
         ))}
+
+        <Button
+          type="button"
+          onClick={agregarCampoNumero}
+          className="mt-4 bg-green-400 text-white hover:bg-green-500 px-4 py-2 rounded"
+        >
+          Agregar otro Número
+        </Button>
+
 
         <div className="mt-4 font-semibold">
           Total a pagar: ${numerosRifa.length * 50}
         </div>
       </div>
+
+
 
         <label htmlFor="fecha" className="block text-left text-gray-500 text-sm mb-1">
           Fecha
@@ -252,7 +253,7 @@ const servidores = [
         )}
 
         <Button onClick={agregarParticipante} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
-          Vender número al Compañero
+          Vender Rifa
         </Button>
       </div>
       <br />
