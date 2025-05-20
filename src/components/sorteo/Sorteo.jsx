@@ -95,6 +95,16 @@ const servidores = [
 
       const numerosValidos = numerosRifa.map(n => n.trim()).filter(n => n);
 
+      // Verificar si alguno de los números ya fue vendido
+      const duplicados = numerosValidos.filter((n) =>
+        numerosVendidos.includes(Number(n))
+      );
+
+      if (duplicados.length > 0) {
+        alert(`⚠️ Los siguientes números ya están vendidos: ${duplicados.join(", ")}`);
+        return;
+      }
+
       try {
         const response = await fetch(`${hostServer}/participantes`, {
           method: "POST",
@@ -125,6 +135,7 @@ const servidores = [
       }
     }
   };
+
 
 
   const realizarSorteo = () => {
@@ -187,14 +198,9 @@ const servidores = [
       <div className="flex flex-col gap-2 mb-4">
         <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del comprador" />
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp del comprador" />
-
-        <br />
-        <hr />
-
+        
       <div className="flex flex-col gap-2 items-center">
-        <div className="text-sm font-semibold mb-2 text-orange-600 bg-orange-100 px-2 py-1 rounded">
-          Verificá si el número está disponible
-        </div>
+
         {numerosRifa.map((num, index) => (
           <div key={index} className="flex items-center gap-2 w-full">
             <Input
@@ -218,10 +224,6 @@ const servidores = [
           Total a pagar: ${numerosRifa.length * 50}
         </div>
       </div>
-
-
-
-
 
         <label htmlFor="fecha" className="block text-left text-gray-500 text-sm mb-1">
           Fecha
