@@ -5,6 +5,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { motion } from "framer-motion";
 import CuadriculaNumeros from "./CuadriculaNumeros";
 import ResumenPorServidor from './ResumenPorServidor';
+import Carrusel from "./Carrusel";
 
 export default function Sorteo() {
   const [nombre, setNombre] = useState("");
@@ -194,6 +195,7 @@ const servidores = [
 
   return (
     <div className="p-6 max-w-md mx-auto text-center bg-white">
+      <Carrusel />
       <h2 className="text-3xl font-bold text-blue-700 mb-1">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-4">SIMPLE Y ESPIRITUAL</h2>
       <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
