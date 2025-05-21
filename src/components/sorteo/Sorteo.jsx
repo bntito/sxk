@@ -195,10 +195,10 @@ const servidores = [
 
   return (
     <div className="p-6 max-w-md mx-auto text-center bg-white">
-      <Carrusel />
       <h2 className="text-3xl font-bold text-blue-700 mb-1">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-4">SIMPLE Y ESPIRITUAL</h2>
-      <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
+      <Carrusel />
+      <h5 className="text-2xl font text-blue-500 mt-3 mb-6">💰 $50 💰</h5>
       <div className="flex flex-col gap-2 mb-4">
         <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del comprador" />
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp del comprador" />
