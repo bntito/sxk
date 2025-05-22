@@ -38,6 +38,7 @@ const servidores = [
   { nombre: "Pablo T", pin: "0000" },
   { nombre: "Bruno T", pin: "2468" },
   { nombre: "Martín G", pin: "2469" },
+  { nombre: "Estefany D", pin: "1989" },
 ];
 
 
