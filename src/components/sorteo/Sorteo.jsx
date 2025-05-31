@@ -23,6 +23,7 @@ export default function Sorteo() {
   const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
 
 const servidores = [
+  { nombre: "Carolina R", pin: "2985" },
   { nombre: "Alejandra B", pin: "1234" },
   { nombre: "Claudio O", pin: "5678" },
   { nombre: "Darwin G", pin: "4321" },
