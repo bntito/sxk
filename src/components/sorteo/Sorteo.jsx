@@ -166,7 +166,7 @@ const servidores = [
 
   useEffect(() => {
     const objetivo = new Date();
-    objetivo.setMonth(4); // junio (0-based)
+    objetivo.setMonth(5); // junio (0-based)
     objetivo.setDate(28);
     objetivo.setHours(0, 0, 0, 0);
 
