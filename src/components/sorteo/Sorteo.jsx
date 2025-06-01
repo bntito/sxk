@@ -162,12 +162,12 @@ const servidores = [
   };
 
   const numerosVendidos = participantes.map((p) => Number(p.numeroRifa));
-    const [tiempoRestante, setTiempoRestante] = useState("");
+  
+  const [tiempoRestante, setTiempoRestante] = useState("");
 
   useEffect(() => {
-    const objetivo = new Date();
-    objetivo.setMonth(5); // junio (0-based)
-    objetivo.setDate(28);
+    const ahora = new Date();
+    const objetivo = new Date(ahora.getFullYear(), 5, 28); // 28 de junio
     objetivo.setHours(0, 0, 0, 0);
 
     const actualizarCuenta = () => {
@@ -179,14 +179,12 @@ const servidores = [
         return;
       }
 
-      const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+      const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
       const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
       const minutos = Math.floor((diferencia / (1000 * 60)) % 60);
       const segundos = Math.floor((diferencia / 1000) % 60);
 
-      setTiempoRestante(
-        `${dias}d ${horas}h ${minutos}m ${segundos}s`
-      );
+      setTiempoRestante(`${dias}d ${horas}h ${minutos}m ${segundos}s`);
     };
 
     actualizarCuenta();
@@ -194,6 +192,7 @@ const servidores = [
 
     return () => clearInterval(intervalo);
   }, []);
+
 
   return (
     <div className="p-6 max-w-md mx-auto text-center bg-white">
