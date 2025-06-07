@@ -18,9 +18,14 @@ const ResumenPorServidor = ({ participantes }) => {
       const response = await fetch("https://sxh-server.onrender.com/api/datos");
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
+
+      // Obtener la fecha actual en formato YYYY-MM-DD
+      const fecha = new Date().toISOString().split('T')[0];
+      const nombreArchivo = `datos-${fecha}.json`;
+
       const link = document.createElement("a");
       link.href = url;
-      link.download = "datos.json";
+      link.download = nombreArchivo;
       link.click();
       URL.revokeObjectURL(url);
     } catch (error) {
