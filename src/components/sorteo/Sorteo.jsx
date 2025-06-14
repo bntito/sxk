@@ -21,7 +21,7 @@ export default function Sorteo() {
   const [finalizado, setFinalizado] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [tiempoRestante, setTiempoRestante] = useState("");
-  const [botonHabilitado, setBotonHabilitado] = useState(true);
+  const [botonHabilitado, setBotonHabilitado] = useState(false);
 
   const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
 
@@ -231,8 +231,6 @@ const guardarGanador = async (ganador) => {
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
       {/* <ListaGanadores /> */}
-      <h2>Prueba de ganadores</h2>
-      <ListaGanadores />
       <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
 
       <div className="flex flex-col gap-2 mb-4">
