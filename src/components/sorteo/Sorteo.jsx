@@ -5,6 +5,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { motion } from "framer-motion";
 import CuadriculaNumeros from "./CuadriculaNumeros";
 import ResumenPorServidor from './ResumenPorServidor';
+import ListaGanadores from "./ListaGanadores";
 
 export default function Sorteo() {
   const [nombre, setNombre] = useState("");
@@ -15,31 +16,33 @@ export default function Sorteo() {
   const [pin, setPin] = useState("");
   const [participantes, setParticipantes] = useState([]);
   const [ganador, setGanador] = useState(null);
-  const [ganadores, setGanadores] = useState([]); // 👈 historial de ganadores
+  const [ganadores, setGanadores] = useState([]); // historial de ganadores
   const [animando, setAnimando] = useState(false);
   const [finalizado, setFinalizado] = useState(false);
   const [cargando, setCargando] = useState(true);
+  const [tiempoRestante, setTiempoRestante] = useState("");
+  const [botonHabilitado, setBotonHabilitado] = useState(false);
 
   const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
 
   const servidores = [
-  { nombre: "Carolina R", pin: "2985" },
-  { nombre: "Alejandra B", pin: "1234" },
-  { nombre: "Claudio O", pin: "5678" },
-  { nombre: "Darwin G", pin: "4321" },
-  { nombre: "Edgardo R", pin: "1111" },
-  { nombre: "Facundo S", pin: "2222" },
-  { nombre: "Gonzalo B", pin: "3333" },
-  { nombre: "Leandro R", pin: "4444" },
-  { nombre: "Matías N", pin: "5555" },
-  { nombre: "Paula S", pin: "1411" },
-  { nombre: "Verónica F", pin: "7777" },
-  { nombre: "Nicolás P", pin: "8888" },
-  { nombre: "Nicolás F", pin: "9999" },
-  { nombre: "Pablo T", pin: "0000" },
-  { nombre: "Bruno T", pin: "2468" },
-  { nombre: "Martín G", pin: "2469" },
-  { nombre: "Estefany D", pin: "1989" },
+    { nombre: "Carolina R", pin: "2985" },
+    { nombre: "Alejandra B", pin: "1234" },
+    { nombre: "Claudio O", pin: "5678" },
+    { nombre: "Darwin G", pin: "4321" },
+    { nombre: "Edgardo R", pin: "1111" },
+    { nombre: "Facundo S", pin: "2222" },
+    { nombre: "Gonzalo B", pin: "3333" },
+    { nombre: "Leandro R", pin: "4444" },
+    { nombre: "Matías N", pin: "5555" },
+    { nombre: "Paula S", pin: "1411" },
+    { nombre: "Verónica F", pin: "7777" },
+    { nombre: "Nicolás P", pin: "8888" },
+    { nombre: "Nicolás F", pin: "9999" },
+    { nombre: "Pablo T", pin: "0000" },
+    { nombre: "Bruno T", pin: "2468" },
+    { nombre: "Martín G", pin: "2469" },
+    { nombre: "Estefany D", pin: "1989" },
   ];
 
   const formatFecha = (fecha) => {
@@ -81,6 +84,8 @@ export default function Sorteo() {
     nuevos[index] = value;
     setNumerosRifa(nuevos);
   };
+
+  const numerosVendidos = participantes.flatMap(p => p.numeroRifa).map(Number);
 
   const agregarParticipante = async () => {
     if (
@@ -130,12 +135,42 @@ export default function Sorteo() {
           cargarParticipantes();
         } else {
           console.error("Error al agregar el participante:", data.error);
+          alert("Error al agregar participante");
         }
       } catch (error) {
         console.error("Error al agregar el participante:", error);
+        alert("Error al agregar participante");
       }
+    } else {
+      alert("Complete todos los campos correctamente");
     }
   };
+
+  // NUEVO: función para guardar ganador en backend
+const guardarGanador = async (ganador) => {
+  try {
+    // Creamos una copia de ganador con la fecha formateada
+    const ganadorParaEnviar = {
+      ...ganador,
+      fecha: ganador.fecha ? ganador.fecha.slice(0, 10) : null,
+    };
+
+    const response = await fetch(`${hostServer}/ganadores`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(ganadorParaEnviar),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error guardando ganador:", errorData);
+      alert("No se pudo guardar el ganador en el servidor");
+    }
+  } catch (error) {
+    console.error("Error guardando ganador:", error);
+    alert("No se pudo guardar el ganador en el servidor");
+  }
+};
 
   const realizarSorteo = () => {
     const participantesElegibles = participantes.filter(p =>
@@ -155,6 +190,7 @@ export default function Sorteo() {
           setAnimando(false);
           setFinalizado(true);
           setGanadores(prev => [...prev, elegido]);
+          guardarGanador(elegido); // <-- Guarda en backend al ganador
         }
       }, 100);
     } else {
@@ -162,12 +198,9 @@ export default function Sorteo() {
     }
   };
 
-  const numerosVendidos = participantes.flatMap(p => p.numeroRifa).map(Number);
-  const [tiempoRestante, setTiempoRestante] = useState("");
-
   useEffect(() => {
     const objetivo = new Date();
-    objetivo.setMonth(5);
+    objetivo.setMonth(5); // junio (0-based)
     objetivo.setDate(28);
     objetivo.setHours(0, 0, 0, 0);
 
@@ -197,18 +230,28 @@ export default function Sorteo() {
     <div className="p-6 max-w-md mx-auto text-center bg-white">
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
+      {/* <ListaGanadores /> */}
       <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
+
       <div className="flex flex-col gap-2 mb-4">
-        <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del comprador" />
-        <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp del comprador" />
-        
+        <Input
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          placeholder="Nombre del comprador"
+        />
+        <Input
+          value={whatsapp}
+          onChange={(e) => setWhatsapp(e.target.value)}
+          placeholder="WhatsApp del comprador"
+        />
+
         <div className="flex flex-col gap-2 items-center">
           {numerosRifa.map((num, index) => (
             <div key={index} className="flex items-center gap-2 w-full">
               <Input
                 value={num}
                 onChange={(e) => actualizarNumero(index, e.target.value)}
-                placeholder={`Número de Rifa  # ${index + 1}`}
+                placeholder={`Número de Rifa  #${index + 1}`}
                 className="flex-1"
               />
             </div>
@@ -227,7 +270,10 @@ export default function Sorteo() {
           </div>
         </div>
 
-        <label htmlFor="fecha" className="block text-left text-gray-500 text-sm mb-1">
+        <label
+          htmlFor="fecha"
+          className="block text-left text-gray-500 text-sm mb-1"
+        >
           Fecha
         </label>
         <Input
@@ -263,7 +309,10 @@ export default function Sorteo() {
           />
         )}
 
-        <Button onClick={agregarParticipante} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+        <Button
+          onClick={agregarParticipante}
+          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+        >
           Vender Rifa
         </Button>
       </div>
@@ -271,7 +320,7 @@ export default function Sorteo() {
       <br />
       <Button
         onClick={realizarSorteo}
-        disabled={animando || participantes.length < 2}
+        disabled={!botonHabilitado || animando || participantes.length < 2}
         className="w-full mb-4 bg-blue-600 hover:bg-blue-700 text-white"
       >
         {animando ? "Sorteando..." : "Iniciar Sorteo"}
@@ -288,7 +337,9 @@ export default function Sorteo() {
               {animando ? "Eligiendo..." : `¡Ganador: ${ganador.nombre}!`}
             </motion.h3>
             <p className="text-white">WhatsApp: {ganador.whatsapp}</p>
-            <p className="text-white">Número de Rifa: {ganador.numeroRifa}</p>
+            <p className="text-white">
+              Número de Rifa: {Array.isArray(ganador.numeroRifa) ? ganador.numeroRifa.join(", ") : ganador.numeroRifa}
+            </p>
             <p className="text-white">Fecha: {formatFecha(ganador.fecha)}</p>
             <p className="text-white">Servidor: {ganador.servidor}</p>
           </CardContent>
@@ -297,11 +348,15 @@ export default function Sorteo() {
 
       {ganadores.length > 0 && (
         <div className="mt-6 text-left">
-          <h3 className="text-xl font-semibold mb-2 text-blue-700">Ganadores anteriores</h3>
+          <h3 className="text-xl font-semibold mb-2 text-blue-700">
+            Ganadores anteriores
+          </h3>
           <ul className="space-y-1 text-sm">
             {ganadores.map((g, idx) => (
               <li key={idx} className="bg-blue-100 p-2 rounded">
-                <strong>{g.nombre}</strong> - N°: {g.numeroRifa} - {formatFecha(g.fecha)} - Servidor: {g.servidor}
+                <strong>{g.nombre}</strong> - N°:{" "}
+                {Array.isArray(g.numeroRifa) ? g.numeroRifa.join(", ") : g.numeroRifa} -{" "}
+                {formatFecha(g.fecha)} - Servidor: {g.servidor}
               </li>
             ))}
           </ul>
@@ -309,17 +364,18 @@ export default function Sorteo() {
       )}
 
       <h3 className="text-lg font-semibold mb-4 text-red-600">
-        Cuenta regresiva al sorteo 
-        <br /><hr />
+        Cuenta regresiva al sorteo
+        <br />
+        <hr />
         {tiempoRestante}
       </h3>
 
       <p className="mt-6 text-sm text-gray-700">
-        🎉 El sorteo se hará el mismo día del cumpleaños del grupo: 
+        🎉 El sorteo se hará el mismo día del cumpleaños del grupo: <br />
+        <strong>28 de junio</strong>.
         <br />
-        <strong>28 de junio</strong>.<br />
-        🛠️ Las reuniones de servicio para formar parte de los servidores del cumple serán los sábados: 
-        <br />
+        🛠️ Las reuniones de servicio para formar parte de los servidores del
+        cumple serán los sábados: <br />
         <strong>31 de mayo</strong> y <strong>14 de junio</strong>.
       </p>
 
@@ -339,16 +395,24 @@ export default function Sorteo() {
           <tbody>
             {cargando ? (
               <tr>
-                <td colSpan="5" className="text-center py-2">Cargando...</td>
+                <td colSpan="5" className="text-center py-2">
+                  Cargando...
+                </td>
               </tr>
             ) : (
               participantes.map((p) => (
                 <tr
                   key={p.id}
-                  className={`${finalizado && p.nombre === ganador?.nombre ? "bg-blue-500 text-white" : "bg-white"}`}
+                  className={`${
+                    finalizado && p.nombre === ganador?.nombre
+                      ? "bg-blue-500 text-white"
+                      : "bg-white"
+                  }`}
                 >
                   <td className="border border-blue-300 px-1 py-0.5">{p.nombre}</td>
-                  <td className="border border-blue-300 px-1 py-0.5">{p.numeroRifa}</td>
+                  <td className="border border-blue-300 px-1 py-0.5">
+                    {Array.isArray(p.numeroRifa) ? p.numeroRifa.join(", ") : p.numeroRifa}
+                  </td>
                   <td className="border border-blue-300 px-1 py-0.5">{p.whatsapp}</td>
                   <td className="border border-blue-300 px-1 py-0.5">{formatFecha(p.fecha)}</td>
                   <td className="border border-blue-300 px-1 py-0.5">{p.servidor}</td>

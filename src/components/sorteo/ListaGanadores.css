@@ -1,0 +1,50 @@
+.lg-container {
+  max-width: 480px;
+  margin: 1.5rem auto;
+  padding: 0.6rem;
+  background-color: #fefefe;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.lg-title {
+  text-align: center;
+  margin-bottom: 0.6rem;
+  color: #333;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.lg-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.lg-table th,
+.lg-table td {
+  padding: 3px 5px; /* menos padding */
+  border: 1px solid #ddd;
+  text-align: center;
+  color: #444;
+}
+
+.lg-table thead {
+  background-color: #007bff;
+  color: white;
+}
+
+.lg-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.lg-loading,
+.lg-error,
+.lg-no-data {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+  margin-top: 1rem;
+  word-wrap: break-word;
+}
