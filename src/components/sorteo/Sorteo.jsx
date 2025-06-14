@@ -5,7 +5,6 @@ import { Card, CardContent } from "../../components/ui/card";
 import { motion } from "framer-motion";
 import CuadriculaNumeros from "./CuadriculaNumeros";
 import ResumenPorServidor from './ResumenPorServidor';
-import Carrusel from "./Carrusel";
 
 export default function Sorteo() {
   const [nombre, setNombre] = useState("");
@@ -16,13 +15,14 @@ export default function Sorteo() {
   const [pin, setPin] = useState("");
   const [participantes, setParticipantes] = useState([]);
   const [ganador, setGanador] = useState(null);
+  const [ganadores, setGanadores] = useState([]); // 👈 historial de ganadores
   const [animando, setAnimando] = useState(false);
   const [finalizado, setFinalizado] = useState(false);
   const [cargando, setCargando] = useState(true);
 
   const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
 
-const servidores = [
+  const servidores = [
   { nombre: "Carolina R", pin: "2985" },
   { nombre: "Alejandra B", pin: "1234" },
   { nombre: "Claudio O", pin: "5678" },
@@ -40,8 +40,7 @@ const servidores = [
   { nombre: "Bruno T", pin: "2468" },
   { nombre: "Martín G", pin: "2469" },
   { nombre: "Estefany D", pin: "1989" },
-];
-
+  ];
 
   const formatFecha = (fecha) => {
     const date = new Date(fecha);
@@ -85,89 +84,91 @@ const servidores = [
 
   const agregarParticipante = async () => {
     if (
-      !nombre.trim() ||
-      !whatsapp.trim() ||
-      !numerosRifa.some((n) => n.trim()) ||
-      !fecha.trim() ||
-      !servidor.trim() ||
-      !pin.trim()
+      nombre.trim() &&
+      whatsapp.trim() &&
+      numerosRifa.some((n) => n.trim()) &&
+      fecha.trim() &&
+      servidor.trim() &&
+      pin.trim()
     ) {
-      alert("⚠️ Por favor, completá todos los campos obligatorios.");
-      return;
-    }
-
-    if (!validarPin()) {
-      alert("PIN incorrecto para el servidor seleccionado");
-      return;
-    }
-
-    const numerosValidos = numerosRifa.map(n => n.trim()).filter(n => n);
-
-    // Verificar si alguno de los números ya fue vendido
-    const duplicados = numerosValidos.filter((n) =>
-      numerosVendidos.includes(Number(n))
-    );
-
-    if (duplicados.length > 0) {
-      alert(`⚠️ Los siguientes números ya están vendidos: ${duplicados.join(", ")}`);
-      return;
-    }
-
-    try {
-      const response = await fetch(`${hostServer}/participantes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre,
-          whatsapp,
-          numeroRifa: numerosValidos,
-          fecha,
-          servidor,
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setNombre("");
-        setWhatsapp("");
-        setNumerosRifa([""]);
-        setFecha("");
-        setServidor("");
-        setPin("");
-        cargarParticipantes();
-      } else {
-        console.error("Error al agregar el participante:", data.error);
+      if (!validarPin()) {
+        alert("PIN incorrecto para el servidor seleccionado");
+        return;
       }
-    } catch (error) {
-      console.error("Error al agregar el participante:", error);
+
+      const numerosValidos = numerosRifa.map(n => n.trim()).filter(n => n);
+      const duplicados = numerosValidos.filter((n) =>
+        numerosVendidos.includes(Number(n))
+      );
+
+      if (duplicados.length > 0) {
+        alert(`⚠️ Los siguientes números ya están vendidos: ${duplicados.join(", ")}`);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${hostServer}/participantes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombre,
+            whatsapp,
+            numeroRifa: numerosValidos,
+            fecha,
+            servidor,
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setNombre("");
+          setWhatsapp("");
+          setNumerosRifa([""]);
+          setFecha("");
+          setServidor("");
+          setPin("");
+          cargarParticipantes();
+        } else {
+          console.error("Error al agregar el participante:", data.error);
+        }
+      } catch (error) {
+        console.error("Error al agregar el participante:", error);
+      }
     }
   };
 
   const realizarSorteo = () => {
-    if (participantes.length > 1) {
+    const participantesElegibles = participantes.filter(p =>
+      !ganadores.some(g => g.nombre === p.nombre)
+    );
+
+    if (participantesElegibles.length > 0) {
       setAnimando(true);
       setFinalizado(false);
       let iteraciones = 30;
       let intervalo = setInterval(() => {
-        const elegido = participantes[Math.floor(Math.random() * participantes.length)];
+        const elegido = participantesElegibles[Math.floor(Math.random() * participantesElegibles.length)];
         setGanador(elegido);
         iteraciones--;
         if (iteraciones <= 0) {
           clearInterval(intervalo);
           setAnimando(false);
           setFinalizado(true);
+          setGanadores(prev => [...prev, elegido]);
         }
       }, 100);
+    } else {
+      alert("No quedan participantes sin haber ganado.");
     }
   };
 
-  const numerosVendidos = participantes.map((p) => Number(p.numeroRifa));
-  
+  const numerosVendidos = participantes.flatMap(p => p.numeroRifa).map(Number);
   const [tiempoRestante, setTiempoRestante] = useState("");
 
   useEffect(() => {
-    const ahora = new Date();
-    const objetivo = new Date(ahora.getFullYear(), 5, 28); // 28 de junio
+    const objetivo = new Date();
+    objetivo.setMonth(5);
+    objetivo.setDate(28);
     objetivo.setHours(0, 0, 0, 0);
 
     const actualizarCuenta = () => {
@@ -179,7 +180,7 @@ const servidores = [
         return;
       }
 
-      const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
+      const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
       const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
       const minutos = Math.floor((diferencia / (1000 * 60)) % 60);
       const segundos = Math.floor((diferencia / 1000) % 60);
@@ -189,46 +190,42 @@ const servidores = [
 
     actualizarCuenta();
     const intervalo = setInterval(actualizarCuenta, 1000);
-
     return () => clearInterval(intervalo);
   }, []);
 
-
   return (
     <div className="p-6 max-w-md mx-auto text-center bg-white">
-      <h2 className="text-3xl font-bold text-blue-700 mb-1">SORTEO</h2>
-      <h2 className="text-3xl font-bold text-blue-700 mb-4">SIMPLE Y ESPIRITUAL</h2>
-      <Carrusel />
-      <h5 className="text-2xl font text-blue-500 mt-3 mb-6">💰 $50 💰</h5>
+      <h2 className="text-3xl font-bold text-blue-700 mb-6">SORTEO</h2>
+      <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
+      <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
       <div className="flex flex-col gap-2 mb-4">
         <Input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del comprador" />
         <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp del comprador" />
         
-      <div className="flex flex-col gap-2 items-center">
+        <div className="flex flex-col gap-2 items-center">
+          {numerosRifa.map((num, index) => (
+            <div key={index} className="flex items-center gap-2 w-full">
+              <Input
+                value={num}
+                onChange={(e) => actualizarNumero(index, e.target.value)}
+                placeholder={`Número de Rifa  # ${index + 1}`}
+                className="flex-1"
+              />
+            </div>
+          ))}
 
-        {numerosRifa.map((num, index) => (
-          <div key={index} className="flex items-center gap-2 w-full">
-            <Input
-              value={num}
-              onChange={(e) => actualizarNumero(index, e.target.value)}
-              placeholder={`Número de Rifa  # ${index + 1}`}
-              className="flex-1"
-            />
+          <Button
+            type="button"
+            onClick={agregarCampoNumero}
+            className="mt-4 bg-green-400 text-white hover:bg-green-500 px-4 py-2 rounded"
+          >
+            Agregar otro Número
+          </Button>
+
+          <div className="mt-4 font-semibold">
+            Total a pagar: ${numerosRifa.length * 50}
           </div>
-        ))}
-
-        <Button
-          type="button"
-          onClick={agregarCampoNumero}
-          className="mt-4 bg-green-400 text-white hover:bg-green-500 px-4 py-2 rounded"
-        >
-          Agregar otro Número
-        </Button>
-
-        <div className="mt-4 font-semibold">
-          Total a pagar: ${numerosRifa.length * 50}
         </div>
-      </div>
 
         <label htmlFor="fecha" className="block text-left text-gray-500 text-sm mb-1">
           Fecha
@@ -245,7 +242,7 @@ const servidores = [
           value={servidor}
           onChange={(e) => {
             setServidor(e.target.value);
-            setPin(""); // resetear pin al cambiar servidor
+            setPin("");
           }}
           className="border border-gray-300 rounded px-2 py-1"
         >
@@ -270,12 +267,12 @@ const servidores = [
           Vender Rifa
         </Button>
       </div>
+
       <br />
       <Button
         onClick={realizarSorteo}
-        // disabled={animando || participantes.length < 2}
-        disabled={true}
-        className="w-full mb-6 bg-blue-600 hover:bg-blue-700 text-white"
+        disabled={animando || participantes.length < 2}
+        className="w-full mb-4 bg-blue-600 hover:bg-blue-700 text-white"
       >
         {animando ? "Sorteando..." : "Iniciar Sorteo"}
       </Button>
@@ -298,6 +295,19 @@ const servidores = [
         </Card>
       )}
 
+      {ganadores.length > 0 && (
+        <div className="mt-6 text-left">
+          <h3 className="text-xl font-semibold mb-2 text-blue-700">Ganadores anteriores</h3>
+          <ul className="space-y-1 text-sm">
+            {ganadores.map((g, idx) => (
+              <li key={idx} className="bg-blue-100 p-2 rounded">
+                <strong>{g.nombre}</strong> - N°: {g.numeroRifa} - {formatFecha(g.fecha)} - Servidor: {g.servidor}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <h3 className="text-lg font-semibold mb-4 text-red-600">
         Cuenta regresiva al sorteo 
         <br /><hr />
@@ -312,6 +322,7 @@ const servidores = [
         <br />
         <strong>31 de mayo</strong> y <strong>14 de junio</strong>.
       </p>
+
       <CuadriculaNumeros numerosVendidos={numerosVendidos} />
 
       <div className="overflow-x-auto mb-6">
