@@ -174,14 +174,16 @@ const guardarGanador = async (ganador) => {
 };
 
 const realizarSorteo = () => {
-  // Números que ya ganaron
-  const numerosGanadores = ganadores.flatMap(g => g.numeroRifa).map(Number);
+  // Obtener todos los números ganadores en un array plano de números
+  const numerosGanadores = ganadores.flatMap(g => 
+    Array.isArray(g.numeroRifa) ? g.numeroRifa : [g.numeroRifa]
+  ).map(Number);
 
-  // Participantes con al menos un número no ganador
-  const participantesElegibles = participantes.filter(p =>
-    Array.isArray(p.numeroRifa) &&
-    p.numeroRifa.some(n => !numerosGanadores.includes(Number(n)))
-  );
+  // Filtrar participantes que tienen al menos un número que no haya ganado aún
+  const participantesElegibles = participantes.filter(p => {
+    const numeros = Array.isArray(p.numeroRifa) ? p.numeroRifa : [p.numeroRifa];
+    return numeros.some(n => !numerosGanadores.includes(Number(n)));
+  });
 
   if (participantesElegibles.length > 0) {
     setAnimando(true);
@@ -193,7 +195,8 @@ const realizarSorteo = () => {
 
       do {
         elegido = participantesElegibles[Math.floor(Math.random() * participantesElegibles.length)];
-        numeroGanador = elegido.numeroRifa.find(n => !numerosGanadores.includes(Number(n)));
+        const numeros = Array.isArray(elegido.numeroRifa) ? elegido.numeroRifa : [elegido.numeroRifa];
+        numeroGanador = numeros.find(n => !numerosGanadores.includes(Number(n)));
       } while (!numeroGanador);
 
       const ganadorFinal = {
@@ -209,7 +212,7 @@ const realizarSorteo = () => {
         setAnimando(false);
         setFinalizado(true);
         setGanadores(prev => [...prev, ganadorFinal]);
-        guardarGanador(ganadorFinal); // <-- Guarda en backend al ganador
+        guardarGanador(ganadorFinal);
       }
     }, 100);
   } else {
