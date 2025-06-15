@@ -1,7 +1,7 @@
 export default function CuadriculaNumeros({ numerosVendidos = [] }) {
   const vendidosSet = new Set(numerosVendidos.map(Number));
   const cantidadVendidos = vendidosSet.size;
-  const disponibles = 300 - cantidadVendidos;
+  const disponibles = 500 - cantidadVendidos;
 
   return (
     <div className="my-6">
@@ -19,7 +19,7 @@ export default function CuadriculaNumeros({ numerosVendidos = [] }) {
       </div>
 
       <div className="grid grid-cols-10 gap-1 max-w-full mx-auto">
-        {Array.from({ length: 300 }, (_, i) => i + 1).map((num) => {
+        {Array.from({ length: 500 }, (_, i) => i + 1).map((num) => {
           const vendido = vendidosSet.has(num);
           return (
             <div
