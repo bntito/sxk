@@ -12,7 +12,7 @@ const ListaGanadores = () => {
     const fetchGanadores = async () => {
       try {
         const res = await fetch(`${hostServer}/ganadores`);
-        if (!res.ok) throw new Error("Error al obtener ganadores");
+        if (!res.ok) throw new Error("No hay ganadores");
         const data = await res.json();
         setGanadores(data);
       } catch (err) {
