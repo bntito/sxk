@@ -24,6 +24,11 @@ export default function Sorteo() {
   const [botonHabilitado, setBotonHabilitado] = useState(true);
   const [autorizado, setAutorizado] = useState(false);
 
+  // Estados nuevos para confirmación de entrega
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+  const [entregado, setEntregado] = useState(false);
+  const [ganadorParaConfirmar, setGanadorParaConfirmar] = useState(null);
+
   const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
 
   const servidores = [
@@ -147,78 +152,108 @@ export default function Sorteo() {
     }
   };
 
-  // NUEVO: función para guardar ganador en backend
-const guardarGanador = async (ganador) => {
-  try {
-    // Creamos una copia de ganador con la fecha formateada
-    const ganadorParaEnviar = {
-      ...ganador,
-      fecha: ganador.fecha ? ganador.fecha.slice(0, 10) : null,
-    };
-
-    const response = await fetch(`${hostServer}/ganadores`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(ganadorParaEnviar),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error guardando ganador:", errorData);
-      alert("No se pudo guardar el ganador en el servidor");
-    }
-  } catch (error) {
-    console.error("Error guardando ganador:", error);
-    alert("No se pudo guardar el ganador en el servidor");
-  }
-};
-
-const realizarSorteo = () => {
-  // Obtener todos los números ganadores en un array plano de números
-  const numerosGanadores = ganadores.flatMap(g => 
-    Array.isArray(g.numeroRifa) ? g.numeroRifa : [g.numeroRifa]
-  ).map(Number);
-
-  // Filtrar participantes que tienen al menos un número que no haya ganado aún
-  const participantesElegibles = participantes.filter(p => {
-    const numeros = Array.isArray(p.numeroRifa) ? p.numeroRifa : [p.numeroRifa];
-    return numeros.some(n => !numerosGanadores.includes(Number(n)));
-  });
-
-  if (participantesElegibles.length > 0) {
-    setAnimando(true);
-    setFinalizado(false);
-    let iteraciones = 30;
-    let intervalo = setInterval(() => {
-      let elegido;
-      let numeroGanador;
-
-      do {
-        elegido = participantesElegibles[Math.floor(Math.random() * participantesElegibles.length)];
-        const numeros = Array.isArray(elegido.numeroRifa) ? elegido.numeroRifa : [elegido.numeroRifa];
-        numeroGanador = numeros.find(n => !numerosGanadores.includes(Number(n)));
-      } while (!numeroGanador);
-
-      const ganadorFinal = {
-        ...elegido,
-        numeroRifa: [numeroGanador],
+  // función para guardar ganador en backend
+  const guardarGanador = async (ganador) => {
+    try {
+      const ganadorParaEnviar = {
+        ...ganador,
+        fecha: ganador.fecha ? ganador.fecha.slice(0, 10) : null,
+        entregado: ganador.entregado || false, // agregá esto
       };
 
-      setGanador(ganadorFinal);
-      iteraciones--;
+      const response = await fetch(`${hostServer}/ganadores`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ganadorParaEnviar),
+      });
 
-      if (iteraciones <= 0) {
-        clearInterval(intervalo);
-        setAnimando(false);
-        setFinalizado(true);
-        setGanadores(prev => [...prev, ganadorFinal]);
-        guardarGanador(ganadorFinal);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error guardando ganador:", errorData);
+        alert("No se pudo guardar el ganador en el servidor");
       }
-    }, 100);
-  } else {
-    alert("No quedan números disponibles sin haber salido ganadores.");
-  }
-};
+    } catch (error) {
+      console.error("Error guardando ganador:", error);
+      alert("No se pudo guardar el ganador en el servidor");
+    }
+  };
+
+
+  const realizarSorteo = () => {
+    const numerosGanadores = ganadores.flatMap(g => 
+      Array.isArray(g.numeroRifa) ? g.numeroRifa : [g.numeroRifa]
+    ).map(Number);
+
+    const participantesElegibles = participantes.filter(p => {
+      const numeros = Array.isArray(p.numeroRifa) ? p.numeroRifa : [p.numeroRifa];
+      return numeros.some(n => !numerosGanadores.includes(Number(n)));
+    });
+
+    if (participantesElegibles.length > 0) {
+      setAnimando(true);
+      setFinalizado(false);
+      let iteraciones = 30;
+      let intervalo = setInterval(() => {
+        let elegido;
+        let numeroGanador;
+
+        do {
+          elegido = participantesElegibles[Math.floor(Math.random() * participantesElegibles.length)];
+          const numeros = Array.isArray(elegido.numeroRifa) ? elegido.numeroRifa : [elegido.numeroRifa];
+          numeroGanador = numeros.find(n => !numerosGanadores.includes(Number(n)));
+        } while (!numeroGanador);
+
+        const ganadorFinal = {
+          ...elegido,
+          numeroRifa: [numeroGanador],
+        };
+
+        setGanador(ganadorFinal);
+        iteraciones--;
+
+        if (iteraciones <= 0) {
+          clearInterval(intervalo);
+          setAnimando(false);
+          setFinalizado(true);
+          setGanadorParaConfirmar(ganadorFinal);
+          setMostrarConfirmacion(true);
+        }
+      }, 100);
+    } else {
+      alert("No quedan números disponibles sin haber salido ganadores.");
+    }
+  };
+
+  const confirmarGanador = () => {
+    const ganadorConEntrega = {...ganadorParaConfirmar, entregado};
+    setGanadores(prev => [...prev, ganadorConEntrega]);
+    guardarGanador(ganadorConEntrega);
+    setMostrarConfirmacion(false);
+    setEntregado(false);
+    setGanadorParaConfirmar(null);
+  };
+
+  // Modal para confirmar entrega
+  const modalConfirmacion = mostrarConfirmacion ? (
+    <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="modal-content p-6 bg-white rounded shadow-lg max-w-sm w-full">
+        <p className="mb-4 text-lg">¿Se entregó el premio a <strong>{ganadorParaConfirmar?.nombre}</strong>?</p>
+        <label className="flex items-center gap-2 mb-4 cursor-pointer select-none">
+          <input 
+            type="checkbox" 
+            checked={entregado} 
+            onChange={() => setEntregado(!entregado)} 
+            className="cursor-pointer"
+          />
+          Entregado
+        </label>
+        <div className="flex justify-end gap-3">
+          <Button variant="secondary" onClick={() => setMostrarConfirmacion(false)}>Cancelar</Button>
+          <Button onClick={confirmarGanador}>Confirmar</Button>
+        </div>
+      </div>
+    </div>
+  ) : null;
 
   useEffect(() => {
     const objetivo = new Date();
@@ -254,6 +289,31 @@ const realizarSorteo = () => {
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
       {/* <ListaGanadores /> */}
       <ListaGanadores />
+          {mostrarConfirmacion && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+          <p className="mb-4 text-lg">
+            ¿Se entregó el premio a <strong>{ganadorParaConfirmar?.nombre}</strong>?
+          </p>
+          <label className="flex items-center gap-2 mb-4">
+            <input
+              type="checkbox"
+              checked={entregado}
+              onChange={() => setEntregado(!entregado)}
+            />
+            Entregado
+          </label>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setMostrarConfirmacion(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmarGanador}>
+              Confirmar
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
       <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
 
       <div className="flex flex-col gap-2 mb-4">

@@ -6,7 +6,7 @@ const ListaGanadores = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const hostServer = "https://sxh-server.onrender.com";
+  const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
 
   useEffect(() => {
     const fetchGanadores = async () => {
@@ -23,7 +23,7 @@ const ListaGanadores = () => {
     };
 
     fetchGanadores();
-  }, []);
+  }, [hostServer]);
 
   if (loading) return <p className="lg-loading">Cargando ganadores...</p>;
   if (error) return <p className="lg-error">Lista de ganadores: {error}</p>;
@@ -38,10 +38,10 @@ const ListaGanadores = () => {
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>n Rifa</th>
+              <th>Nº Rifa</th>
               <th>WhatsApp</th>
-              <th>Fecha</th>
               <th>Servidor</th>
+              <th>Entregado</th>
             </tr>
           </thead>
           <tbody>
@@ -50,8 +50,8 @@ const ListaGanadores = () => {
                 <td>{g.nombre}</td>
                 <td>{g.numeroRifa}</td>
                 <td>{g.whatsapp}</td>
-                <td>{g.fecha ? g.fecha.slice(0, 10) : ""}</td>
                 <td>{g.servidor}</td>
+                <td>{g.entregado ? "Sí" : "No"}</td>
               </tr>
             ))}
           </tbody>
