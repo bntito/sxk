@@ -173,31 +173,48 @@ const guardarGanador = async (ganador) => {
   }
 };
 
-  const realizarSorteo = () => {
-    const participantesElegibles = participantes.filter(p =>
-      !ganadores.some(g => g.nombre === p.nombre)
-    );
+const realizarSorteo = () => {
+  // Números que ya ganaron
+  const numerosGanadores = ganadores.flatMap(g => g.numeroRifa).map(Number);
 
-    if (participantesElegibles.length > 0) {
-      setAnimando(true);
-      setFinalizado(false);
-      let iteraciones = 30;
-      let intervalo = setInterval(() => {
-        const elegido = participantesElegibles[Math.floor(Math.random() * participantesElegibles.length)];
-        setGanador(elegido);
-        iteraciones--;
-        if (iteraciones <= 0) {
-          clearInterval(intervalo);
-          setAnimando(false);
-          setFinalizado(true);
-          setGanadores(prev => [...prev, elegido]);
-          guardarGanador(elegido); // <-- Guarda en backend al ganador
-        }
-      }, 100);
-    } else {
-      alert("No quedan participantes sin haber ganado.");
-    }
-  };
+  // Participantes con al menos un número no ganador
+  const participantesElegibles = participantes.filter(p =>
+    p.numeroRifa.some(n => !numerosGanadores.includes(Number(n)))
+  );
+
+  if (participantesElegibles.length > 0) {
+    setAnimando(true);
+    setFinalizado(false);
+    let iteraciones = 30;
+    let intervalo = setInterval(() => {
+      let elegido;
+      let numeroGanador;
+
+      do {
+        elegido = participantesElegibles[Math.floor(Math.random() * participantesElegibles.length)];
+        numeroGanador = elegido.numeroRifa.find(n => !numerosGanadores.includes(Number(n)));
+      } while (!numeroGanador);
+
+      const ganadorFinal = {
+        ...elegido,
+        numeroRifa: [numeroGanador],
+      };
+
+      setGanador(ganadorFinal);
+      iteraciones--;
+
+      if (iteraciones <= 0) {
+        clearInterval(intervalo);
+        setAnimando(false);
+        setFinalizado(true);
+        setGanadores(prev => [...prev, ganadorFinal]);
+        guardarGanador(ganadorFinal); // <-- Guarda en backend al ganador
+      }
+    }, 100);
+  } else {
+    alert("No quedan números disponibles sin haber salido ganadores.");
+  }
+};
 
   useEffect(() => {
     const objetivo = new Date();
