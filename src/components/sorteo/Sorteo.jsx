@@ -253,6 +253,7 @@ const realizarSorteo = () => {
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SORTEO</h2>
       <h2 className="text-3xl font-bold text-blue-700 mb-6">SIMPLE Y ESPIRITUAL</h2>
       {/* <ListaGanadores /> */}
+      <ListaGanadores />
       <h5 className="text-2xl font text-blue-500 mb-6">💰 $50 💰</h5>
 
       <div className="flex flex-col gap-2 mb-4">
@@ -378,6 +379,7 @@ const realizarSorteo = () => {
         </Card>
       )}
 
+      {/* 
       {ganadores.length > 0 && (
         <div className="mt-6 text-left">
           <h3 className="text-xl font-semibold mb-2 text-blue-700">
@@ -394,6 +396,7 @@ const realizarSorteo = () => {
           </ul>
         </div>
       )}
+      */}
 
       <h3 className="text-lg font-semibold mb-4 text-red-600">
         Cuenta regresiva al sorteo
