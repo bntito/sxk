@@ -21,7 +21,8 @@ export default function Sorteo() {
   const [finalizado, setFinalizado] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [tiempoRestante, setTiempoRestante] = useState("");
-  const [botonHabilitado, setBotonHabilitado] = useState(false);
+  const [botonHabilitado, setBotonHabilitado] = useState(true);
+  const [autorizado, setAutorizado] = useState(false);
 
   const hostServer = import.meta.env.VITE_REACT_APP_SERVER_HOST;
 
@@ -319,7 +320,17 @@ const guardarGanador = async (ganador) => {
 
       <br />
       <Button
-        onClick={realizarSorteo}
+        onClick={() => {
+          if (!autorizado) {
+            const user = prompt("Ingrese su nombre de usuario:");
+            if (user?.trim().toLowerCase() !== "gonza") {
+              alert("Acceso denegado. Solo Gonzalo B puede iniciar el sorteo.");
+              return;
+            }
+            setAutorizado(true);
+          }
+          realizarSorteo();
+        }}
         disabled={!botonHabilitado || animando || participantes.length < 2}
         className="w-full mb-4 bg-blue-600 hover:bg-blue-700 text-white"
       >
