@@ -179,6 +179,7 @@ const realizarSorteo = () => {
 
   // Participantes con al menos un número no ganador
   const participantesElegibles = participantes.filter(p =>
+    Array.isArray(p.numeroRifa) &&
     p.numeroRifa.some(n => !numerosGanadores.includes(Number(n)))
   );
 
