@@ -26,7 +26,7 @@ const ListaGanadores = () => {
   }, []);
 
   if (loading) return <p className="lg-loading">Cargando ganadores...</p>;
-  if (error) return <p className="lg-error">Error: {error}</p>;
+  if (error) return <p className="lg-error">Lista de ganadores: {error}</p>;
 
   return (
     <div className="lg-container">
